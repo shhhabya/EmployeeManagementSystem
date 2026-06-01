@@ -1496,8 +1496,10 @@ updateAudienceUI();
 							} else {
 							%>
 
-							<i id="profileIcon" class="bi bi-person-circle"
-								style="font-size: 80px;"> </i>
+							<i id="profileIcon"
+   class="bi bi-person-circle text-dark"
+   style="font-size:80px;">
+</i>
 
 							<%
 							}
