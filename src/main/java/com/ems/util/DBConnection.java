@@ -34,7 +34,7 @@ public class DBConnection {
 
         } catch(Exception e) {
 
-            e.printStackTrace();
+        	System.err.println("Database connection failed: " + e.getMessage());
 
         }
 
