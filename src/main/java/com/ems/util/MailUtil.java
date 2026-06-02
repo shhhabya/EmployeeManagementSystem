@@ -12,15 +12,21 @@ import jakarta.mail.internet.MimeMessage;
 
 public class MailUtil {
 
-    public static void sendEmail(String toEmail,
-                                 String subject,
-                                 String body) {
+	public static void sendEmail(String toEmail,
+            String subject,
+            String body) {
 
-    	final String fromEmail =
-    	        System.getenv("EMAIL_USER");
+System.out.println("MAIL METHOD CALLED");
+System.out.println("TO = " + toEmail);
 
-    	final String password =
-    	        System.getenv("EMAIL_PASSWORD");
+final String fromEmail =
+System.getenv("EMAIL_USER");
+
+final String password =
+System.getenv("EMAIL_PASSWORD");
+
+System.out.println("EMAIL_USER = " + fromEmail);
+System.out.println("EMAIL_PASSWORD NULL? " + (password == null));
 
         Properties props = new Properties();
 
