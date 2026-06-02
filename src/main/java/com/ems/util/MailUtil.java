@@ -1,80 +1,72 @@
 package com.ems.util;
 
-import java.util.Properties;
-
-import jakarta.mail.Authenticator;
-import jakarta.mail.Message;
-import jakarta.mail.PasswordAuthentication;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class MailUtil {
 
-	public static void sendEmail(String toEmail,
+    public static void sendEmail(
+            String toEmail,
             String subject,
             String body) {
 
-System.out.println("MAIL METHOD CALLED");
-System.out.println("TO = " + toEmail);
-
-final String fromEmail =
-System.getenv("EMAIL_USER");
-
-final String password =
-System.getenv("EMAIL_PASSWORD");
-
-System.out.println("EMAIL_USER = " + fromEmail);
-System.out.println("EMAIL_PASSWORD NULL? " + (password == null));
-
-        Properties props = new Properties();
-
-        props.put("mail.smtp.host", "smtp-relay.brevo.com");
-        props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-
-        Session session = Session.getInstance(props,
-            new Authenticator() {
-
-                protected PasswordAuthentication
-                getPasswordAuthentication() {
-
-                    return new PasswordAuthentication(
-                        fromEmail,
-                        password
-                    );
-                }
-            });
-
         try {
 
-            Message message =
-            new MimeMessage(session);
+            String apiKey =
+                    System.getenv("BREVO_API_KEY");
 
-            message.setFrom(
-                new InternetAddress(fromEmail)
+            URL url = new URL(
+                    "https://api.brevo.com/v3/smtp/email"
             );
 
-            message.setRecipients(
-                Message.RecipientType.TO,
-                InternetAddress.parse(toEmail)
+            HttpURLConnection con =
+                    (HttpURLConnection)
+                    url.openConnection();
+
+            con.setRequestMethod("POST");
+            con.setRequestProperty(
+                    "accept",
+                    "application/json"
             );
 
-            message.setSubject(subject);
+            con.setRequestProperty(
+                    "api-key",
+                    apiKey
+            );
 
-            message.setText(body);
+            con.setRequestProperty(
+                    "content-type",
+                    "application/json"
+            );
 
-            Transport.send(message);
+            con.setDoOutput(true);
+
+            String json =
+                    "{"
+                    + "\"sender\":{\"email\":\"ggnubz69420@gmail.com\"},"
+                    + "\"to\":[{\"email\":\"" + toEmail + "\"}],"
+                    + "\"subject\":\"" + subject + "\","
+                    + "\"textContent\":\""
+                    + body.replace("\"","\\\"")
+                    + "\""
+                    + "}";
+
+            try(OutputStream os =
+                    con.getOutputStream()) {
+
+                os.write(json.getBytes());
+            }
 
             System.out.println(
-                "Email Sent Successfully!"
+                    "Brevo Response Code = "
+                    + con.getResponseCode()
             );
 
-        } catch (Exception e) {
+        } catch(Exception e) {
 
             e.printStackTrace();
+
         }
     }
 }
