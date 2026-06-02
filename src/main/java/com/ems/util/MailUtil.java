@@ -18,6 +18,16 @@ public class MailUtil {
             String apiKey =
                     System.getenv("BREVO_API_KEY");
 
+            String safeBody = body
+                    .replace("\\", "\\\\")
+                    .replace("\"", "\\\"")
+                    .replace("\n", "\\n")
+                    .replace("\r", "");
+
+            String safeSubject = subject
+                    .replace("\\", "\\\\")
+                    .replace("\"", "\\\"");
+
             URL url = new URL(
                     "https://api.brevo.com/v3/smtp/email"
             );
@@ -49,16 +59,16 @@ public class MailUtil {
                     "{"
                     + "\"sender\":{\"email\":\"ggnubz69420@gmail.com\"},"
                     + "\"to\":[{\"email\":\"" + toEmail + "\"}],"
-                    + "\"subject\":\"" + subject + "\","
-                    + "\"textContent\":\""
-                    + body.replace("\"", "\\\"")
-                    + "\""
+                    + "\"subject\":\"" + safeSubject + "\","
+                    + "\"textContent\":\"" + safeBody + "\""
                     + "}";
+
+            System.out.println("JSON = " + json);
 
             try (OutputStream os =
                     con.getOutputStream()) {
 
-                os.write(json.getBytes());
+                os.write(json.getBytes("UTF-8"));
 
             }
 
@@ -92,6 +102,12 @@ public class MailUtil {
                 }
 
                 br.close();
+
+            } else {
+
+                System.out.println(
+                        "Email Sent Successfully!"
+                );
 
             }
 
