@@ -1,5 +1,7 @@
 package com.ems.util;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,6 +27,7 @@ public class MailUtil {
                     url.openConnection();
 
             con.setRequestMethod("POST");
+
             con.setRequestProperty(
                     "accept",
                     "application/json"
@@ -48,22 +51,51 @@ public class MailUtil {
                     + "\"to\":[{\"email\":\"" + toEmail + "\"}],"
                     + "\"subject\":\"" + subject + "\","
                     + "\"textContent\":\""
-                    + body.replace("\"","\\\"")
+                    + body.replace("\"", "\\\"")
                     + "\""
                     + "}";
 
-            try(OutputStream os =
+            try (OutputStream os =
                     con.getOutputStream()) {
 
                 os.write(json.getBytes());
+
             }
+
+            int responseCode =
+                    con.getResponseCode();
 
             System.out.println(
                     "Brevo Response Code = "
-                    + con.getResponseCode()
+                    + responseCode
             );
 
-        } catch(Exception e) {
+            if (responseCode >= 400) {
+
+                BufferedReader br =
+                        new BufferedReader(
+                                new InputStreamReader(
+                                        con.getErrorStream()
+                                )
+                        );
+
+                String line;
+
+                while ((line = br.readLine())
+                        != null) {
+
+                    System.out.println(
+                            "BREVO ERROR: "
+                            + line
+                    );
+
+                }
+
+                br.close();
+
+            }
+
+        } catch (Exception e) {
 
             e.printStackTrace();
 
