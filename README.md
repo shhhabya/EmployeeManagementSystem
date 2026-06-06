@@ -64,5 +64,3 @@ This project was originally developed as an Advanced Java college project and la
 - Deployed using Apache Tomcat
 - Database hosted on Aiven
 - Application deployed on Render
-
-## Project Structure
